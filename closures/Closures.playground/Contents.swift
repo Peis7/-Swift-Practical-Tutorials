@@ -39,51 +39,52 @@ arreglo.append("Great")
 arreglo.append("is")
 arreglo.append("Swift")
 arreglo.append(":)")
-func orderBackWords(a:[String],concatenador:(valueUntilNow:String,actualValue:String)->String)->String{//concatenador:(String,String)->String
+func orderBackWards(a:[String],concatenador:(valueUntilNow:String,actualValue:String)->String)->String{//concatenador:(String,String)->String
     var result = ""//it will be saving partial result,at the end the final result as well
     for value in a{//we move through the array elements
         result = concatenador(valueUntilNow: result, actualValue: value)//we avaluate or closure passing the partial result and the actual element of the input array
     }
     return result
 }
-orderBackWords(arreglo,concatenador: {(partialResult ,actualElement)->String in return "\(actualElement) \(partialResult)"})
-orderBackWords(arreglo){"\($1) \($0)"}//Shorthand Argument Names:$0 represents argument 1, $2 argument 2, $n argument n
-//2.-----------------------------------------------------------------------------------------------------
-//El siguiente closure puede hacer 2 cosas.
-//1.- Borrar una letra especifica de un string o cambiar un caracter especifico por otro
-func lettersDeleterOrChanger(word:String,toDelete:Character,deleter:Bool,changeWord:Character, closure: (currentNewValue:String,letter:Character,deleter:Bool,toDelete:Character,changeWord:Character)->String)->String{
+//Now i will show you diferent closure xpressions sintax
+orderBackWards(arreglo,concatenador: {(partialResult:String ,actualElement:String)->String in return "\(actualElement) \(partialResult)"})//This is the general form, { (parameters) -> return type in statements }
+orderBackWards(arreglo,concatenador: {(partialResult ,actualElement)->String in return "\(actualElement) \(partialResult)"})//parameters type are inferred
+orderBackWards(arreglo,concatenador: {partialResult ,actualElement in return "\(actualElement) \(partialResult)"})//parameters types and return type are inferred
+orderBackWards(arreglo,concatenador: {partialResult ,actualElement in "\(actualElement) \(partialResult)"})//if there is only one statement, return is assumed, in this case a string
+orderBackWards(arreglo){"\($1) \($0)"}//Shorthand Argument Names:$0 represents argument 1, $2 argument 2, $n argument n and as you can see ther are a few strange things, first, our closures is still here and in this case is every thing between the curly braces({"\($1) \($0)"}) and it is posible if our closures is the last argument, in this case we can "move it out" the parenthesis and place our  statement between this curly braces
+/*2.-----------------------------------------------------------------------------------------------------
+In our second example we  have this function wich parameters are.
+ fist: A string, that is the input that we are going to work in.
+ second: a character to delete from the input string(first parameter)
+ third: another character, in this case
+will create a function that can do 2 things.
+1.- Borrar una letra especifica de un string o cambiar un caracter especifico por otro
+*/
+func lettersDeleterOrChanger(myString:String,fromChar:Character,toChar:Character,closure: (currentChar:Character,fromChar:Character,toChar:Character)->String)->String{
     var result = String()
-    for character in word.characters{
-        result = closure(currentNewValue: result,letter:character,deleter:deleter,toDelete:toDelete,changeWord: changeWord)
+    for character in myString.characters{
+        result = result + closure(currentChar:character,fromChar:fromChar,toChar:toChar)
     }
     
     return result
 }
 
 //NOTA: Se puede hacer en dos funciones separadas, una para sustituir y la otra para eliminar
-var quieroQuitarLaS = "Hola, Mundo, este es un String y que ahora tiene muchas S"
-var toDeleteChar = Character("s")
-var changeWord = Character("P")
+var testSting = "Hola, Mundo, este es un String y que ahora tiene muchas S"
+var characterToChange = Character("s")
+var newChar = Character("Y")
 //La primera sustituye la 's' por 'P'
-let sinS = lettersDeleterOrChanger(quieroQuitarLaS,toDelete: toDeleteChar,deleter: false,changeWord:changeWord){(currentValue,letter,deleter,toDelete,changeWord)->String in
-    if deleter{
-        return letter == toDelete ? "\(currentValue)" : "\(currentValue)\(letter)"
-    }
-    else{
-        return letter == toDelete ? "\(currentValue)\(changeWord)" : "\(currentValue)\(letter)"
-    }
+let sinS = lettersDeleterOrChanger(testSting,fromChar:characterToChange,toChar: newChar){(currentChar,fromChar,newChar)->String in
+    return currentChar == fromChar ? "\(newChar)" : "\(currentChar)"
 }
 print(sinS)
 
 
 //Aplicamos un closure con una definicion en linea y utilizando la notacion abreviada y con inferencia de tipos
-var removeO = Character("o")
-var sinO = lettersDeleterOrChanger(quieroQuitarLaS,toDelete: removeO,deleter: true,changeWord:changeWord){
-    if $2{
-        return $1 == $3 ? "\($0)":"\($0)\($1)"
-    }else{
-        return $1 == $3 ? "\($0)\($4)":"\($0)\($1)"
-    }
+var characterToChange2 = Character("H")
+var newChar2 = Character("f")
+var sinO = lettersDeleterOrChanger(testSting,fromChar:characterToChange2,toChar: newChar2){
+    return $0 == $1 ? "\($2)" :"\($0)"
 }
 print(sinO)
 
@@ -97,7 +98,7 @@ func mySorting(array:[Int],sorter:(alreadySort:[Int],elementToSort:Int)->[Int])-
     return sortedArray
 }
 
-var unsortedList = [4,-1,2,34,-34,1,45,34,56,-90,-675,23,23,345,23,54,3,5,34,65,7,67,45,45,2,3,4,567,87,6,55,4,3,67,45,89,12,34]
+var unsortedList = [4,-1,2,34,-34,1,45,34,56,-230,-90,-675,23,23,345,23,54,3,5,34,65,7,67,45,45,2,3,4,567,87,6,55,4,3,67,45,89,12,34]
 func sortPersonalizated(alreadySorted:[Int],actualValue:Int)->[Int]{
     var copy = alreadySorted//usar paso por referencia en lugar de una copia
     var flag = false
@@ -219,6 +220,4 @@ print(devide)
 //8. Clousure give us the greater element in an array
 
 
-func max(givenArray:Double){
-}
 
