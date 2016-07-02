@@ -57,8 +57,7 @@ In our second example we  have this function wich parameters are.
  fist: A string, that is the input that we are going to work in.
  second: a character to delete from the input string(first parameter)
  third: another character, in this case
-will create a function that can do 2 things.
-1.- Borrar una letra especifica de un string o cambiar un caracter especifico por otro
+will create a function that takes a string an two characters, one is the charactre we will be looking for all throught the string to change with the second character
 */
 func lettersDeleterOrChanger(myString:String,fromChar:Character,toChar:Character,closure: (currentChar:Character,fromChar:Character,toChar:Character)->String)->String{
     var result = String()
@@ -70,7 +69,7 @@ func lettersDeleterOrChanger(myString:String,fromChar:Character,toChar:Character
 }
 
 //NOTA: Se puede hacer en dos funciones separadas, una para sustituir y la otra para eliminar
-var testSting = "Hola, Mundo, este es un String y que ahora tiene muchas S"
+var testSting = "Hi, we are using closures"
 var characterToChange = Character("s")
 var newChar = Character("Y")
 //La primera sustituye la 's' por 'P'
@@ -80,58 +79,56 @@ let sinS = lettersDeleterOrChanger(testSting,fromChar:characterToChange,toChar: 
 print(sinS)
 
 
-//Aplicamos un closure con una definicion en linea y utilizando la notacion abreviada y con inferencia de tipos
+//Using Shorthand Argument Notation
 var characterToChange2 = Character("H")
 var newChar2 = Character("f")
 var sinO = lettersDeleterOrChanger(testSting,fromChar:characterToChange2,toChar: newChar2){
     return $0 == $1 ? "\($2)" :"\($0)"
 }
 print(sinO)
+//at this point you are probably thinking: "Those problems could easyli be solved without closures" or "I cant see how closures will make things easier", dont worry! At the end of this set of problems, you'll change you mind.
 
+//3.Things get more intersting here, in our third problem we have to create a function that recives an unsorted array and we will use a closure that sorts it.
 
-//3.closure que ordena un arreglo de enteros, son insercion
-func mySorting(array:[Int],sorter:(alreadySort:[Int],elementToSort:Int)->[Int])->[Int]{
+func mySorting(inout array:[Int],sorter:(inout unSorted:[Int],elementToSort:Int)->Void)->[Int]{
     var sortedArray = [Int]()
     for value in array{
-        sortedArray = sorter(alreadySort: sortedArray,elementToSort: value)
+        sorter(unSorted: &sortedArray,elementToSort: value)
     }
     return sortedArray
 }
 
-var unsortedList = [4,-1,2,34,-34,1,45,34,56,-230,-90,-675,23,23,345,23,54,3,5,34,65,7,67,45,45,2,3,4,567,87,6,55,4,3,67,45,89,12,34]
-func sortPersonalizated(alreadySorted:[Int],actualValue:Int)->[Int]{
-    var copy = alreadySorted//usar paso por referencia en lugar de una copia
+var unsortedList = [4,-1,2,34,-34,1,45,34,-1110,56,-230,-90,-675,23,23,345,23,54,3,5,34,65,7,67,45,45,2,3,4,567,87,6,55,4,3,67,45,89,12,34]
+func sortPersonalizated(inout alreadySorted:[Int],actualValue:Int)->Void{
     var flag = false
-    if copy.count > 0{
+    if alreadySorted.count > 0{
         var valor_anterior = 0
-        for (index,val) in copy.enumerate(){
-            //valor_anterior = (val < 0)? val : 0
+        for (index,val) in alreadySorted.enumerate(){
             if !(index == 0){
-                valor_anterior = copy[index-1]
+                valor_anterior = alreadySorted[index-1]
             }else{
-                if actualValue<0{
+                if actualValue < 0{
                     valor_anterior = actualValue
                 }else{
-                    valor_anterior=0
+                    valor_anterior = 0
                 }
             }
             if actualValue <= val && actualValue >= valor_anterior{
-                copy.insert(actualValue, atIndex: index)
+                alreadySorted.insert(actualValue, atIndex: index)
                 flag = true
                 break
             }
         }
         if !flag{
-            copy.append(actualValue)
+            alreadySorted.append(actualValue)//if it was not found until here, it must be at the end
         }
         
     }else{
-        copy.append(actualValue)
+         alreadySorted.append(actualValue)
     }
-    return copy
 }
-let sortedList = mySorting(unsortedList,sorter: sortPersonalizated)
-print(sortedList)
+var result = mySorting(&unsortedList,sorter: sortPersonalizated)
+print(result)
 
 
 //4.closures para crear un 'incrementer'
