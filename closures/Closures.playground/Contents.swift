@@ -131,23 +131,34 @@ var result = mySorting(&unsortedList,sorter: sortPersonalizated)
 print(result)
 
 
-//4.closures para crear un 'incrementer'
-
-func incrementer(incrementValue:Int)->((value:Int)->Int){
-    func incrementer(val:Int)->Int{
-        return incrementValue + val
+/*4.In this next example we are going to create an  'incrementer'
+ In Swift, the simplest form of a closure that can capture values is a nested function.
+*/
+func operationPerformencer(forIncrement amount: Float,toPerformpOpration operation:(Float,Float)->Float) -> () -> (Float,Bool) {
+    var runningTotal:Float = 0.0
+    var enclosedVar:Bool = false
+    func perform() -> (Float,Bool) {
+        runningTotal = operation(runningTotal,amount)
+        if runningTotal > 31{
+            enclosedVar = true
+        }
+        return (runningTotal,enclosedVar)
     }
-return incrementer
+    return perform
 }
-var incrementValue = 1
-let incrementByOne = incrementer(incrementValue)
-var x = 0
-x = incrementByOne(value: x)
-x = incrementByOne(value: x)
-let incrementByOneHundred = incrementer(100)
-var y = incrementByOneHundred(value:1)
-
-//5. Closure que mapea un arreglo valor por valor, procesa cada valor y retorna algo basado en este procesamiento
+var powOfTwo = operationPerformencer(forIncrement: 2, toPerformpOpration: {(x,y) in if x==0{return y}else{return x*y} })
+powOfTwo()//by this fist call our powOfTwo function that are 'closed' by our nested function will have the values of (2,false) as we expect, nothing weird
+powOfTwo()//but in the second call of powOfTwo we can see this 'hability' of closures, now we can think that our values runningTotal and enclosedVar will have the initial values like in the first call, but now their initial values are that they get as result of first call
+powOfTwo()//by now as you are probably thinking, the value of the variables is the result after the seconf call, our closure is 'closing' those values and after each call, the values dont 'die'
+powOfTwo()//in this call the result will be (16,false)
+powOfTwo()//in this call the result will be (32,true), by this call our condition will be
+powOfTwo()//in this  the result will be (64,true)
+var incrementByTen = operationPerformencer(forIncrement: 10, toPerformpOpration: {(x,y) in return x+y })
+incrementByTen()
+incrementByTen()
+incrementByTen()
+incrementByTen()
+//5. Our next example is a function provided by apple call map, with a parameter that is a  Closure  that gets a value of the same type as the array type to proccess each value of the array
 var presidents = ["Obama", "Bush", "Washington"]
 presidents.map({
     (president: String) -> String in
@@ -157,7 +168,7 @@ presidents.map({
             return "\(president) was the president!"
         }
 })
-//6. Closure our own version of Map, with the diference that the original is part of the array class it self
+//6.our own version of Map, with a few differences, our function returns an array after all the mapping, with the diference that the original is part of the object it self.
 
 func myMap(arrayToMap:[String],mapper:(String)->String?)->[String]{
     var new = [String]()
@@ -213,8 +224,6 @@ devide = reducer(someArray,devidingCharacter: separator){(currentString,characte
 }
 
 print(devide)
-
-//8. Clousure give us the greater element in an array
 
 
 
